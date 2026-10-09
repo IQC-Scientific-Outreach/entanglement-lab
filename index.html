@@ -1033,8 +1033,9 @@
     <div class="panel">
 
       <div class="sp-top">
+      <p class="sr-only" id="sp-fig-desc">Diagram of the SPDC experiment.</p>
       <div class="diagram-wrap sp-diagram">
-        <svg id="sp-fig" viewBox="197 6 632 488" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="SPDC setup: laser, nonlinear crystal, and two analyzers each with a wave plate, polarizing beam splitter and two detectors, joined to a coincidence counter">
+        <svg id="sp-fig" viewBox="197 6 632 488" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-labelledby="sp-fig-desc">
   <defs
      id="spf-defs4">
     <linearGradient
@@ -1330,7 +1331,7 @@
         <div class="sp-param-grid">
           <div class="sp-param">
             <div class="sp-param-name">Pulse rate</div>
-            <div class="sp-param-val sp-locked" title="Fixed for this laser">80 MHz &nbsp;<span class="sp-sub">(80,000,000 pulses/s)</span> &#128274;</div>
+            <div class="sp-param-val sp-locked" title="Fixed for this laser">80 MHz &nbsp;<span class="sp-sub">(80,000,000 pulses/s)</span> <span role="img" aria-label="fixed">&#128274;</span></div>
           </div>
           <div class="sp-param">
             <div class="sp-param-name" id="lbl-sp-time">Collection time</div>
@@ -3260,6 +3261,7 @@
     scatterPhotons();
     var beam = $('sp-laser-beam');
     if (beam) beam.setAttribute('class', sp.gen === 0 ? 'off' : sp.gen <= 0.001 ? 'glow-1' : sp.gen <= 0.01 ? 'glow-2' : 'glow-3');
+    describeFigure();
     $('sp-eff-val').textContent = sp.eff.toFixed(1);
     $('sp-eff-down').disabled = sp.eff <= EFF_STEPS[0] + 1e-9;
     $('sp-eff-up').disabled = sp.eff >= EFF_STEPS[EFF_STEPS.length - 1] - 1e-9;
@@ -3329,6 +3331,23 @@
       });
     }
     g.innerHTML = html;
+  }
+
+  // Screen-reader description of the figure, kept in step with the settings
+  // (the picture itself changes with gen, the bases and the source).
+  function describeFigure(){
+    var d = $('sp-fig-desc'); if (!d) return;
+    var laser = sp.gen === 0
+      ? 'The pump laser on the left is off (pair generation probability 0), so no photon pairs are produced. '
+      : 'The pump laser on the left shines on a nonlinear crystal, producing photon pairs with probability ' + sp.gen + ' per pulse' +
+        (sp.gen >= 0.1 ? ' (a bright, strongly glowing beam). ' : sp.gen >= 0.01 ? ' (a glowing beam). ' : ' (a faint beam). ');
+    var t = 'Diagram of the SPDC experiment. ' + laser +
+      'One photon of each pair goes up to Alice and the other down to Bob, drawn as matching dots on the two paths. ' +
+      'On each side a wave plate sets the measurement basis (Alice ' + BASIS_NAME[sp.bases.A] + ', Bob ' + BASIS_NAME[sp.bases.B] + ') ' +
+      'and a polarizing beam splitter sends outcome 0 straight through to one detector and outcome 1 to a second detector; ' +
+      'the dots after each beam splitter divide between the two outputs in proportion to how likely each outcome is. ' +
+      'All four detectors are wired to a coincidence counter on the right.';
+    if (d.textContent !== t) d.textContent = t;
   }
 
   // ---------------- results ----------------
@@ -3544,10 +3563,27 @@
 
   // 3) Polarization diagram: a text description that follows the live settings.
   function txt(id){ var e = document.getElementById(id); return e ? e.textContent.trim() : ''; }
+  // The source box's symbol, in words (it is drawn as SVG text: Psi/Phi with a
+  // superscript sign, a pair of arrows, or the stacked "->-> or ^^").
+  var ARROW_WORD = { '\u2192':'horizontal', '\u2191':'vertical', '\u2197':'+45 degree', '\u2198':'\u221245 degree' };
+  function sourceWords(){
+    var el = document.getElementById('source-state-label'); if (!el) return 'preparing a photon pair';
+    var parts = Array.prototype.map.call(el.childNodes, function(n){ return n.textContent.trim(); }).filter(Boolean);
+    var all = parts.join('');
+    if (/^[\u03A8\u03A6]/.test(all)){
+      return 'preparing the entangled Bell state ' + (all.charAt(0) === '\u03A8' ? 'Psi' : 'Phi') + (/[\u2212-]/.test(all) ? ' minus' : ' plus');
+    }
+    if (parts.length === 3 && parts[1] === 'or'){
+      return 'preparing either two horizontal or two vertical photons (classically correlated, not entangled)';
+    }
+    if (all.length === 2 && ARROW_WORD[all.charAt(0)] && ARROW_WORD[all.charAt(1)]){
+      return 'preparing a separable pair: Alice\u2019s photon ' + ARROW_WORD[all.charAt(0)] + ', Bob\u2019s ' + ARROW_WORD[all.charAt(1)];
+    }
+    return 'preparing ' + all;
+  }
   function describePol(){
     var d = document.getElementById('pol-diagram-desc'); if (!d) return;
-    var t = 'Diagram of the polarization experiment. An entangled source in the middle, preparing ' +
-      (txt('source-state-label') || 'an entangled state') + ', sends one photon left to Alice and one right to Bob. ' +
+    var t = 'Diagram of the polarization experiment. A source in the middle, ' + sourceWords() + ', sends one photon left to Alice and one right to Bob. ' +
       'Alice\u2019s polarizer is set to ' + (txt('alice-symbol') || 'unknown') + ' and Bob\u2019s to ' + (txt('bob-symbol') || 'unknown') +
       '. Each polarizer is followed by a detector, and both detectors are wired to a coincidence counter. ' +
       'Detections so far: Alice ' + (txt('alice-singles-n') || '0') + ', Bob ' + (txt('bob-singles-n') || '0') +
