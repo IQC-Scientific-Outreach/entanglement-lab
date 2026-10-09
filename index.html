@@ -3410,12 +3410,12 @@
       var rc = st.bell === 'psi' ? projTex('01') + '+' + projTex('10') : projTex('00') + '+' + projTex('11');
       noiseHtml = '<div class="sp-math-block"><h4>State with noise</h4>' +
         katexSpan('\\rho=(1-u-c)\\,' + projTex(st.sym) + '+u\\,\\tfrac{I\\otimes I}{4}+c\\,\\tfrac{1}{2}\\bigl(' + rc + '\\bigr)') +
-        '&nbsp;&nbsp; with uniform noise <i>u</i> = ' + sp.uniform.toFixed(2) + ' and correlated noise <i>c</i> = ' + sp.corr.toFixed(2) + '</div>';
+        '&nbsp;&nbsp; with uniform noise <i>u</i> = ' + sp.uniform.toFixed(2) + ' and correlated noise <i>c</i> = ' + sp.corr.toFixed(2) + '<br>Noise in the state is modelled in one of two ways. Uniform noise simply assumes some equal probability of any event occuring (decoherence towards the maximally mixed state). Correlated noise tends toward classical correlations, as you would expect for SPDC where other degrees of freedom are connected to polarization (such as temporal walkoff). Both are adjustable here.</div>';
     }
     var html =
       '<div class="sp-math-block"><h4>Source</h4>' + katexSpan(st.tex + (st.tex === st.formula ? '' : '=' + st.formula)) +
         '<br> pulse rate <i>R</i> = 8×10<sup>7</sup>/s, collection time <i>T</i> = ' + windowLabel() + ' (<i>N</i> = ' + fmtCount(pulses()) + ' pulses), ' +
-        '<br>Pair generation probability per pulse <i>gen</i> = ' + sp.gen + '<br>Detector (Klyshko) efficiency <i>eff</i> = ' + sp.eff.toFixed(1) + '<br>Dark count probability per pulse <i>dark</i> = ' + m.dark + '</div>' + noiseHtml +
+        '<br>The probability that each pulse generates a pair of photons is given by <i>gen</i> = ' + sp.gen + '<br>The probability that, given a photon exists, the detectors see it (Klyshko efficiency) is given by <i>eff</i> = ' + sp.eff.toFixed(1) + '<br>The probability that the detectors fire for reasons other than the photon pairs (such as dark counts) is given by <i>dark</i> = ' + m.dark + '</div>' + noiseHtml +
       '<div class="sp-math-block"><h4>Singles (per pulse)</h4>' +
         katexSpan('P_A^{\\text{sig}}=\\mathit{eff}\\cdot\\mathit{gen}\\cdot\\mathrm{Tr}\\!\\left[(\\Pi_a\\otimes I)\\,\\rho\\right],\\qquad P_A=1-(1-\\mathit{dark})\\,(1-P_A^{\\text{sig}})') + ' &nbsp;(same for Bob with <i>I</i>&#8202;&#8855;&#8202;&Pi;<sub>b</sub>)' +
         '<div class="sp-math-scroll"><table class="sp-math-table"><tr><th>Detector</th><th>Tr[&Pi; &rho;]</th><th>P<sup>sig</sup></th><th>P (with dark)</th><th>Expected counts (<i>N</i>&#8202;P)</th></tr>' + rows + '</table></div></div>' +
