@@ -934,7 +934,7 @@
         </div>
       </div>
 
-      <div class="status" id="status-line" style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Idle &#8212; the source has not emitted any pairs yet.</div>
+      <div class="status" id="status-line" style="margin-top:14px; font-size:13px; color:var(--ink-soft);">Idle; the source has not emitted any pairs yet.</div>
 
       <details class="math-trace-details">
         <summary class="math-trace-summary">Details</summary>
@@ -1008,7 +1008,7 @@
           <div class="stat-box"><div class="num" id="bk-stat-sent">0</div><div class="lbl">Pairs Sent</div></div>
           <div class="stat-box"><div class="num" id="bk-stat-agree">0</div><div class="lbl" id="bk-lbl-agree">Outcomes Agree</div></div>
           <div class="stat-box"><div class="num" id="bk-stat-disagree">0</div><div class="lbl" id="bk-lbl-disagree">Outcomes Disagree</div></div>
-          <div class="stat-box"><div class="num" id="bk-stat-corr">&#8212;</div><div class="lbl">Correlation E</div></div>
+          <div class="stat-box"><div class="num" id="bk-stat-corr">-</div><div class="lbl">Correlation E</div></div>
         </div>
       </div>
 
@@ -1367,9 +1367,9 @@
           <div class="sp-param sp-noise" id="sp-noise">
             <div class="sp-param-name">State noise <span class="sp-sub" id="sp-noise-note"></span></div>
             <div class="sp-noise-row">
-              <span class="sp-noise-lbl">White</span>
-              <input type="range" min="0" max="100" step="1" id="sp-white-range" aria-label="White noise">
-              <input type="number" min="0" max="1" step="0.01" id="sp-white-num" aria-label="White noise (0 to 1)">
+              <span class="sp-noise-lbl">Uniform</span>
+              <input type="range" min="0" max="100" step="1" id="sp-uniform-range" aria-label="Uniform noise">
+              <input type="number" min="0" max="1" step="0.01" id="sp-uniform-num" aria-label="Uniform noise (0 to 1)">
             </div>
             <div class="sp-noise-row">
               <span class="sp-noise-lbl">Correlated</span>
@@ -1420,10 +1420,10 @@
           </table>
         </div>
         <div class="stats-grid sp-stats">
-          <div class="stat-box"><div class="num" id="sp-stat-coinc">&#8212;</div><div class="lbl" id="sp-lbl-coinc">Total Coincidences</div></div>
-          <div class="stat-box"><div class="num" id="sp-stat-corr">&#8212;</div><div class="lbl">Correlation E</div></div>
-          <div class="stat-box"><div class="num" id="sp-stat-agree">&#8212;</div><div class="lbl" id="sp-lbl-agree">Agree</div></div>
-          <div class="stat-box"><div class="num" id="sp-stat-disagree">&#8212;</div><div class="lbl" id="sp-lbl-disagree">Disagree</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-coinc">-</div><div class="lbl" id="sp-lbl-coinc">Total Coincidences</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-corr">-</div><div class="lbl">Correlation E</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-agree">-</div><div class="lbl" id="sp-lbl-agree">Agree</div></div>
+          <div class="stat-box"><div class="num" id="sp-stat-disagree">-</div><div class="lbl" id="sp-lbl-disagree">Disagree</div></div>
         </div>
       </div>
 
@@ -1807,7 +1807,7 @@
       } else if (counts.total > 0) {
         a = pct(counts.aliceSingles / counts.total); b = pct(counts.bobSingles / counts.total); c = pct(counts.coincidences / counts.total);
       } else {
-        a = b = c = '\u2014'; // no pairs sent yet
+        a = b = c = '-'; // no pairs sent yet
       }
       els.lblAlice.textContent = 'Alice Singles Prob.';
       els.lblBob.textContent = 'Bob Singles Prob.';
@@ -1945,10 +1945,10 @@
       collapseDot(els.dotAlice, PRESETS[PREP_ANALYZER[o.prep[0]]]);
       collapseDot(els.dotBob, PRESETS[PREP_ANALYZER[o.prep[1]]]);
       els.statusLine.textContent = o.prep[0] === o.prep[1]
-        ? 'Pair emitted \u2014 the source prepared two ' + PREP_WORD[o.prep[0]] + ' photons.'
-        : 'Pair emitted \u2014 Alice\u2019s photon is ' + PREP_WORD[o.prep[0]] + ', Bob\u2019s is ' + PREP_WORD[o.prep[1]] + '.';
+        ? 'Pair emitted; the source prepared two ' + PREP_WORD[o.prep[0]] + ' photons.'
+        : 'Pair emitted; Alice\u2019s photon is ' + PREP_WORD[o.prep[0]] + ', Bob\u2019s is ' + PREP_WORD[o.prep[1]] + '.';
     } else {
-      els.statusLine.textContent = 'Pair emitted \u2014 neither photon has a definite polarization yet\u2026';
+      els.statusLine.textContent = 'Pair emitted; neither photon has a definite polarization yet\u2026';
     }
 
     // The unpolarized dot slides out from behind the source, travels
@@ -1971,7 +1971,7 @@
       if (r.bPass) flashClass(els.bobDetector, 'flash', 340);
       if (gen === countsGen) recordOutcome(o);
       if (r.aPass && r.bPass){
-        els.statusLine.textContent = 'Both detectors fired \u2014 coincidence!';
+        els.statusLine.textContent = 'Both detectors fired (a coincidence!)';
         return Promise.all([
           animateAlongPath(els.pulseAlice, [POS.A_BACK, POS.A_OUT, {x:POS.A_OUT.x,y:POS.CORNER_Y}, POS.COIN], dur*1.4),
           animateAlongPath(els.pulseBob, [POS.B_BACK, POS.B_OUT, {x:POS.B_OUT.x,y:POS.CORNER_Y}, POS.COIN], dur*1.4)
@@ -1980,7 +1980,7 @@
           flashClass(els.coincNode, 'flash', 400);
         });
       } else {
-        els.statusLine.textContent = (r.aPass || r.bPass) ? 'Only one side detected a photon \u2014 no coincidence.' : 'Both photons were absorbed by their polarizers.';
+        els.statusLine.textContent = (r.aPass || r.bPass) ? 'Only one side detected a photon; no coincidence.' : 'Both photons were absorbed by their polarizers.';
       }
     }).finally(function(){
       animBusy = false;
@@ -1996,7 +1996,7 @@
   // ---------------- controls wiring ----------------
   document.getElementById('btn-fire-one').addEventListener('click', function(){ if (!streaming) fireAnimated(); });
   document.getElementById('btn-fire-1000').addEventListener('click', function(){ runBulk(1000); });
-  document.getElementById('btn-reset').addEventListener('click', function(){ resetCounts(); els.statusLine.textContent = 'Idle \u2014 counts reset.'; });
+  document.getElementById('btn-reset').addEventListener('click', function(){ resetCounts(); els.statusLine.textContent = 'Idle; counts reset.'; });
 
   document.querySelectorAll('#speed-switch button').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -2013,7 +2013,7 @@
   function fireQuiet(){
     hideEl(els.dotAlice); hideEl(els.dotBob);
     fireInstant();
-    var msg = 'Auto (Fast) \u2014 counting pairs without animating them.';
+    var msg = 'Auto (Fast) - counting pairs without animating them.';
     if (els.statusLine.textContent !== msg) els.statusLine.textContent = msg;
   }
   function restartStream(){
@@ -2025,7 +2025,7 @@
     streaming = !streaming;
     if (streaming){
       els.playBtn.textContent = '\u23F8 Pause';
-      els.statusLine.textContent = 'Auto \u2014 sending pairs\u2026';
+      els.statusLine.textContent = 'Auto - sending pairs\u2026';
       restartStream();
     } else {
       els.playBtn.textContent = '\u25B6 Auto';
@@ -2475,7 +2475,7 @@
   function shotStatus(res){
     var bits = function(side){ return SIDE_NAME[side] + ' measured ' + res[side].outcome + ' (' + BASIS_NAME[bases[side]] + ')'; };
     if (res.A.alive && res.B.alive){
-      return bits('A') + ', ' + bits('B') + ' — outcomes ' + (res.A.outcome === res.B.outcome ? 'agree.' : 'disagree.');
+      return bits('A') + ', ' + bits('B') + '; outcomes ' + (res.A.outcome === res.B.outcome ? 'agree.' : 'disagree.');
     }
     if (!res.A.alive && !res.B.alive) return 'Both qubits were lost at projectors.';
     var lost = res.A.alive ? 'B' : 'A', kept = lost === 'A' ? 'B' : 'A';
@@ -2556,8 +2556,8 @@
       var ex = exactStats();
       v0 = pct(ex.singles[side][0]); v1 = pct(ex.singles[side][1]);
     } else if (showProb){
-      v0 = counts.sent ? pct(counts.singles[side][0] / counts.sent) : '\u2014';
-      v1 = counts.sent ? pct(counts.singles[side][1] / counts.sent) : '\u2014';
+      v0 = counts.sent ? pct(counts.singles[side][0] / counts.sent) : '-';
+      v1 = counts.sent ? pct(counts.singles[side][1] / counts.sent) : '-';
     } else {
       v0 = counts.singles[side][0]; v1 = counts.singles[side][1];
     }
@@ -2702,14 +2702,14 @@
   // ---------------- results panel ----------------
   function fmtE(e){ return (e > 0 ? '+' : e < 0 ? '−' : '') + Math.abs(e).toFixed(2); }
   function updateStats(){
-    var j, agree, disagree, corr = '—';
+    var j, agree, disagree, corr = '-';
     if (showProb){
       var noData = !theory() && !counts.sent;
       if (theory()) j = exactStats().joint;
       else { j = {}; ['00','01','10','11'].forEach(function(k){ j[k] = counts.sent ? counts.joint[k] / counts.sent : 0; }); }
       agree = j['00'] + j['11']; disagree = j['01'] + j['10'];
       if (agree + disagree > 1e-9) corr = fmtE((agree - disagree) / (agree + disagree));
-      var show = function(x){ return noData ? '\u2014' : pct(x); };
+      var show = function(x){ return noData ? '-' : pct(x); };
       ['00','01','10','11'].forEach(function(k){ $('bk-j-' + k).textContent = show(j[k]); });
       $('bk-stat-agree').textContent = show(agree);
       $('bk-stat-disagree').textContent = show(disagree);
@@ -2896,10 +2896,10 @@
       m.style.opacity = '1';
     });
     $('bk-status').textContent = res.prepared !== null
-      ? 'Pair emitted \u2014 this time the source prepared ' + (res.prepared === 0 ? '|00\u27E9' : '|11\u27E9') + '.'
+      ? 'Pair emitted; this time the source prepared ' + (res.prepared === 0 ? '|00\u27E9' : '|11\u27E9') + '.'
       : BELL[bellKey].product
-      ? 'Pair emitted — a separable pair: each qubit already has its own definite state.'
-      : 'Pair emitted — each qubit on its own is “?”: neither has a definite state yet.';
+      ? 'Pair emitted (a separable pair); each qubit already has its own definite state.'
+      : 'Pair emitted; each qubit on its own is “?” since neither has a definite state yet.';
 
     var chain = wait(120);
     res.steps.forEach(function(step){
@@ -3043,7 +3043,7 @@
     diagram.classList.remove('animating');
     tallyShot(simulateShot());
     refreshLiveCounts();
-    var msg = 'Auto (Fast) \u2014 counting shots without animating them.';
+    var msg = 'Auto (Fast) - counting shots without animating them.';
     if ($('bk-status').textContent !== msg) $('bk-status').textContent = msg;
   }
   function streamLoop(){
@@ -3113,16 +3113,16 @@
   });
   var BELL_ORDER = ['psi_minus','psi_plus','phi_minus','phi_plus'];
 
-  // StateWithNoise: (1 - white - corr) rho + white I/4 + corr rho_c, where
+  // StateWithNoise: (1 - uniform - corr) rho + uniform I/4 + corr rho_c, where
   // rho_c is classically correlated in the 0/1 basis, matching the Bell
   // state's own correlations (Psi: |01>,|10>; Phi: |00>,|11>). Noise only
   // applies to the Bell states -- it's disabled for separable/mixed sources.
   function noisyMix(){
     var st = STATES[sp.state];
     if (!st.bell) return st.mix;
-    var w = sp.white, c = sp.corr, mix = [];
-    st.mix.forEach(function(m){ mix.push({ w: m.w * (1 - w - c), psi: m.psi }); });
-    for (var i = 0; i < 4; i++) mix.push({ w: w / 4, psi: basisKet(i) });
+    var u = sp.uniform, c = sp.corr, mix = [];
+    st.mix.forEach(function(m){ mix.push({ w: m.w * (1 - u - c), psi: m.psi }); });
+    for (var i = 0; i < 4; i++) mix.push({ w: u / 4, psi: basisKet(i) });
     (st.bell === 'psi' ? [1, 2] : [0, 3]).forEach(function(i){ mix.push({ w: c / 2, psi: basisKet(i) }); });
     return mix;
   }
@@ -3208,7 +3208,7 @@
   var EFF_STEPS = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0];
   var sp, data = null, showProb = false, normalize = false, source = 'data', auto = false, timer = null;
   function defaults(){
-    sp = { state:'psi_minus', bases:{ A:'Z', B:'Z' }, eff:0.2, gen:0.01, time:1, darkOn:true, white:0.01, corr:0 };
+    sp = { state:'psi_minus', bases:{ A:'Z', B:'Z' }, eff:0.2, gen:0.01, time:1, darkOn:true, uniform:0.01, corr:0 };
   }
 
   // ---------------- KaTeX ----------------
@@ -3266,7 +3266,7 @@
     var on = noiseActive();
     $('sp-noise').classList.toggle('disabled', !on);
     $('sp-noise-note').textContent = on ? '' : '(entangled sources only)';
-    ['white','corr'].forEach(function(k){
+    ['uniform','corr'].forEach(function(k){
       var r = $('sp-' + k + '-range'), n = $('sp-' + k + '-num');
       r.disabled = n.disabled = !on;
       r.value = Math.round(sp[k] * 100);
@@ -3276,7 +3276,7 @@
   // Noise in 0.01 steps; if the two would sum past 1, the other one gives way.
   function setNoise(which, v){
     v = Math.max(0, Math.min(100, Math.round(v * 100)));
-    var other = which === 'white' ? 'corr' : 'white';
+    var other = which === 'uniform' ? 'corr' : 'uniform';
     var o = Math.round(sp[other] * 100);
     if (v + o > 100) o = 100 - v;
     sp[which] = v / 100; sp[other] = o / 100;
@@ -3335,14 +3335,14 @@
   function fmtCount(n){ return Math.round(n).toLocaleString('en-US'); }
   function fmtE(e){ return (e > 0 ? '+' : e < 0 ? '−' : '') + Math.abs(e).toFixed(2); }
   function fmtSci(x){
-    if (!isFinite(x)) return '—';
+    if (!isFinite(x)) return '-';
     if (x === 0) return '0';
     if (x >= 0.01) return x.toFixed(3);
     var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e);
     if (m >= 9.995){ m = 1; e++; }
     return m.toFixed(2) + '×10<sup>' + e + '</sup>';
   }
-  function fmtPct(x){ return isFinite(x) ? (Math.round(x * 1000) / 10) + '%' : '—'; }
+  function fmtPct(x){ return isFinite(x) ? (Math.round(x * 1000) / 10) + '%' : '-'; }
   function flash(id){ var c = $(id); c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash'); }
   function windowLabel(){ return sp.time === 0.1 ? '0.1 s' : sp.time === 10 ? '10 s' : '1 s'; }
 
@@ -3355,7 +3355,7 @@
     var sumA = v ? v.A[0] + v.A[1] : 0, sumB = v ? v.B[0] + v.B[1] : 0;
     var sumAB = v ? jcells.reduce(function(t, k){ return t + v.AB[k]; }, 0) : 0;
     var cellHtml = function(n, denom){
-      if (!v) return '—';
+      if (!v) return '-';
       if (!showProb) return fmtCount(n) + (expected ? '<span class="pm">± ' + fmtCount(Math.sqrt(n)) + '</span>' : '');
       return normalize ? fmtPct(n / denom) : fmtSci(n / N);
     };
@@ -3370,13 +3370,13 @@
     });
 
     var what = showProb ? (normalize ? 'Probabilities (normalized)' : 'Probabilities (per pulse)') : 'Counts in ' + windowLabel();
-    $('sp-singles-title').textContent = 'Singles — ' + what;
-    $('sp-joint-title').textContent = showProb ? what : 'Coincidences — ' + what;
+    $('sp-singles-title').textContent = 'Singles - ' + what;
+    $('sp-joint-title').textContent = showProb ? what : 'Coincidences - ' + what;
     $('sp-lbl-coinc').textContent = showProb ? 'Coincidence Prob. (per pulse)' : 'Total Coincidences';
     $('sp-lbl-agree').textContent = showProb ? 'Agree Probability' : 'Agree';
     $('sp-lbl-disagree').textContent = showProb ? 'Disagree Probability' : 'Disagree';
 
-    if (!v){ ['sp-stat-coinc','sp-stat-agree','sp-stat-disagree','sp-stat-corr'].forEach(function(id){ $(id).textContent = '—'; }); return; }
+    if (!v){ ['sp-stat-coinc','sp-stat-agree','sp-stat-disagree','sp-stat-corr'].forEach(function(id){ $(id).textContent = '-'; }); return; }
     var agree = v.AB['00'] + v.AB['11'], disagree = v.AB['01'] + v.AB['10'];
     if (!showProb){
       $('sp-stat-coinc').textContent = fmtCount(sumAB);
@@ -3387,7 +3387,7 @@
       $('sp-stat-agree').innerHTML = normalize ? fmtPct(agree / sumAB) : fmtSci(agree / N);
       $('sp-stat-disagree').innerHTML = normalize ? fmtPct(disagree / sumAB) : fmtSci(disagree / N);
     }
-    $('sp-stat-corr').textContent = sumAB > 0 ? fmtE((agree - disagree) / sumAB) : '—';
+    $('sp-stat-corr').textContent = sumAB > 0 ? fmtE((agree - disagree) / sumAB) : '-';
   }
 
   // ---------------- math panel ----------------
@@ -3409,8 +3409,8 @@
     if (st.bell){
       var rc = st.bell === 'psi' ? projTex('01') + '+' + projTex('10') : projTex('00') + '+' + projTex('11');
       noiseHtml = '<div class="sp-math-block"><h4>State with noise</h4>' +
-        katexSpan('\\rho=(1-w-c)\\,' + projTex(st.sym) + '+w\\,\\tfrac{I\\otimes I}{4}+c\\,\\tfrac{1}{2}\\bigl(' + rc + '\\bigr)') +
-        '&nbsp;&nbsp; with white noise <i>w</i> = ' + sp.white.toFixed(2) + 'and correlated noise <i>c</i> = ' + sp.corr.toFixed(2) + '</div>';
+        katexSpan('\\rho=(1-u-c)\\,' + projTex(st.sym) + '+u\\,\\tfrac{I\\otimes I}{4}+c\\,\\tfrac{1}{2}\\bigl(' + rc + '\\bigr)') +
+        '&nbsp;&nbsp; with uniform noise <i>u</i> = ' + sp.uniform.toFixed(2) + ' and correlated noise <i>c</i> = ' + sp.corr.toFixed(2) + '</div>';
     }
     var html =
       '<div class="sp-math-block"><h4>Source</h4>' + katexSpan(st.tex + (st.tex === st.formula ? '' : '=' + st.formula)) +
@@ -3433,7 +3433,7 @@
   // ---------------- actions ----------------
   function status(t){ $('sp-status').textContent = t; }
   function idleStatus(){
-    status(auto ? 'Auto — collecting a new ' + windowLabel() + ' window after each one finishes.'
+    status(auto ? 'Auto - collecting a new ' + windowLabel() + ' window after each one finishes.'
                 : 'Click “Auto” to collect continuously, or “Run Once” for a single ' + windowLabel() + ' collection.');
   }
   function runOnce(){
@@ -3442,7 +3442,7 @@
     // (a flicker); keep the dots from the last settings change instead.
     if (!(auto && sp.time < 1)) scatterPhotons();
     renderResults(sp.time >= 1);
-    status((auto ? 'Auto — ' : '') + windowLabel() + ' of data (' + fmtCount(pulses()) + ' pulses) collected at ' + new Date().toLocaleTimeString() + '.');
+    status((auto ? 'Auto - ' : '') + windowLabel() + ' of data (' + fmtCount(pulses()) + ' pulses) collected at ' + new Date().toLocaleTimeString() + '.');
   }
   function restartTimer(){
     clearInterval(timer);
@@ -3499,7 +3499,7 @@
   }
   $('sp-eff-down').addEventListener('click', function(){ stepEff(-1); });
   $('sp-eff-up').addEventListener('click', function(){ stepEff(1); });
-  ['white','corr'].forEach(function(k){
+  ['uniform','corr'].forEach(function(k){
     $('sp-' + k + '-range').addEventListener('input', function(e){ setNoise(k, Number(e.target.value) / 100); });
     $('sp-' + k + '-num').addEventListener('change', function(e){
       var v = Number(e.target.value);
