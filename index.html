@@ -322,8 +322,8 @@
   /* ---- diagram ---- */
   .diagram-wrap{ position:relative; width:100%; overflow-x:auto; overflow-y:visible; background:#f6f4ee; border:1px solid var(--line); border-radius:8px; padding:14px 0; }
   :root[data-theme="dark"] .diagram-wrap{ background:#20221f; }
-  .diagram-inner{ position:relative; width:900px; height:246px; margin:0 auto; }
-  .diagram-inner svg{ display:block; }
+  .diagram-inner{ position:relative; width:100%; max-width:900px; margin:0 auto; }
+  .diagram-inner svg{ display:block; width:100%; height:auto; }
 
   .beam-line{ stroke: var(--line); stroke-width: 2.5; stroke-dasharray: 1 7; stroke-linecap:round; }
   .coinc-line{ stroke: var(--ink-soft); stroke-width: 2.5; stroke-linecap:round; fill:none; }
@@ -393,6 +393,19 @@
   .source-prod-row{ display:grid; grid-template-columns:repeat(8,1fr); gap:4px; margin-bottom:6px; }
   .source-prod-row .quick-btn{ padding:7px 0; font-size:13px; }
   .source-row .plain{ font:600 11.5px var(--sans); }
+  /* Polarization: when Alice, Source and Bob can't share one line,
+     put Alice and Bob side by side with the Source below them
+     (.stacked is toggled by fitPolarizationControls). */
+  #domain-polarization .control-row.stacked{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #domain-polarization .control-row.stacked .source-control{ grid-column:1 / -1; order:1; }
+  #domain-polarization .control-row.stacked .polarizer-control{ container-type:inline-size; }
+  @container (max-width:260px){
+    #domain-polarization .polarizer-control h3{ font-size:17px; }
+    #domain-polarization .polarizer-control .quick-btn{ padding:9px 2px; font-size:11px; }
+    #domain-polarization .angle-row{ flex-wrap:wrap; gap:4px 8px; }
+    #domain-polarization .angle-num-label{ flex:1 0 100%; }
+    #domain-polarization .angle-num input[type="number"]{ width:48px; }
+  }
   .source-row .katex{ font-size:1em; }
 
   .angle-row{ display:flex; align-items:center; gap:10px; margin-top:10px; }
@@ -449,7 +462,6 @@
 
   @media (max-width:640px){
     h1{ font-size:26px; }
-    .diagram-inner{ width:900px; }
   }
 
   /* ============================= BRA-KET ============================= */
@@ -459,6 +471,8 @@
      connector width (56px) are shared with the controls row below so each
      settings card sits directly under its diagram element. */
   #domain-braket .bk-diagram-inner{ width:max-content; margin:0 auto; }
+  /* Narrow screens: the whole chain is scaled down to fit (see fitBraketDiagram). */
+  #domain-braket .bk-diagram-inner.scaled{ margin:0; transform-origin:0 0; }
   #domain-braket .bk-diagram{ display:flex; align-items:flex-start; padding:16px 84px 6px; position:relative; }
   #domain-braket .bk-node{ flex:0 0 140px; width:140px; display:flex; flex-direction:column; align-items:center; position:relative; z-index:2; }
   #domain-braket .bk-node-title{ font:700 12px var(--sans); color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; margin-bottom:9px; height:14px; white-space:nowrap; }
@@ -605,6 +619,8 @@
   /* ============================= SPDC ============================= */
   #domain-spdc .sp-diagram{ display:flex; justify-content:center; padding:12px 0; }
   #domain-spdc #sp-fig{ display:block; height:300px; width:auto; max-width:100%; overflow:visible; }
+  /* narrower than its natural 300px-tall size: fill the width, keep the aspect ratio */
+  @media (max-width:999px){ #domain-spdc #sp-fig{ width:388px; height:auto; aspect-ratio:632/488; } }
   /* dark mode: the figure's black outlines / white fills follow the theme */
   :root[data-theme="dark"] #sp-fig [style*="stroke:#000000"]{ stroke:var(--ink) !important; }
   :root[data-theme="dark"] #sp-fig [style*="fill:#ffffff"]{ fill:var(--paper) !important; }
@@ -673,6 +689,7 @@
   #domain-spdc .sp-cell{ min-width:96px; text-align:center; font-family:var(--display); font-size:22px; font-weight:700; color:var(--crimson-text);
     padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#fff; white-space:nowrap; }
   :root[data-theme="dark"] #domain-spdc .sp-cell{ background:#242220; }
+  @media (max-width:640px){ #domain-spdc .sp-cell{ min-width:56px; } }
   #domain-spdc .sp-cell.agree{ background:#eaf1fa; }
   :root[data-theme="dark"] #domain-spdc .sp-cell.agree{ background:#1f2c3a; }
   @keyframes sp-cell-flash { 0% { box-shadow:0 0 0 0 rgba(47,143,91,0); } 30% { box-shadow:0 0 0 4px rgba(47,143,91,0.5); } 100% { box-shadow:0 0 0 0 rgba(47,143,91,0); } }
@@ -2331,6 +2348,24 @@
   var animBusy = false;
   var diagram = $('bk-diagram'), controlsRow = $('bk-controls-row');
 
+  // Scale the diagram + settings cards down (never up) to fit narrow screens.
+  var bkInner = diagram.parentNode, bkWrap = bkInner.parentNode, bkScale = 1;
+  function fitBraketDiagram(){
+    var avail = bkWrap.clientWidth;
+    if (!avail) return;
+    var natural = bkInner.offsetWidth, s = natural > avail ? avail / natural : 1;
+    bkScale = s;
+    bkInner.classList.toggle('scaled', s < 1);
+    bkInner.style.transform = s < 1 ? 'scale(' + s + ')' : '';
+    bkInner.style.marginBottom = s < 1 ? (-(1 - s) * bkInner.offsetHeight) + 'px' : '';
+  }
+  if (window.ResizeObserver){
+    var bkRO = new ResizeObserver(function(){ fitBraketDiagram(); });
+    bkRO.observe(bkWrap); bkRO.observe(bkInner);
+  } else {
+    window.addEventListener('resize', fitBraketDiagram);
+  }
+
   function defaultSetup(){
     bellKey = 'psi_minus';
     chains = { A: [], B: [] };
@@ -2821,7 +2856,7 @@
   function nodeEl(key){ return diagram.querySelector('[data-node="' + key + '"]'); }
   function nodeCenter(key){
     var d = diagram.getBoundingClientRect(), b = nodeEl(key).querySelector('.bk-box').getBoundingClientRect();
-    return { x: b.left + b.width/2 - d.left, y: b.top + b.height/2 - d.top };
+    return { x: (b.left + b.width/2 - d.left) / bkScale, y: (b.top + b.height/2 - d.top) / bkScale };
   }
   function placeMarker(m, p){ m.style.transitionDuration = '0ms, 0ms, 200ms'; m.style.left = (p.x - 24) + 'px'; m.style.top = (p.y - 24) + 'px'; }
   function moveMarker(m, p, ms){
@@ -3619,6 +3654,26 @@
     }
   }).observe(document.documentElement, { subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:['class','data-theme'] });
   run();
+})();
+</script>
+<script>
+/* Polarization controls: if Alice, Source and Bob don't all fit on one
+   line, lay out Alice + Bob together with the Source underneath. */
+(function(){
+  var row = document.querySelector('#domain-polarization .control-row');
+  if (!row) return;
+  var cards = row.children;
+  function fitPolarizationControls(){
+    if (!row.offsetWidth) return;                    // panel hidden
+    row.classList.remove('stacked');
+    var top = cards[0].offsetTop, fits = true;
+    for (var i = 1; i < cards.length; i++) if (cards[i].offsetTop !== top) fits = false;
+    if (!fits) row.classList.add('stacked');
+  }
+  if (window.ResizeObserver) new ResizeObserver(fitPolarizationControls).observe(row.parentNode);
+  window.addEventListener('resize', fitPolarizationControls);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPolarizationControls);
+  fitPolarizationControls();
 })();
 </script>
 </body>
