@@ -396,9 +396,15 @@
   /* Polarization: when Alice, Source and Bob can't share one line,
      put Alice and Bob side by side with the Source below them
      (.stacked is toggled by fitPolarizationControls). */
-  #domain-polarization .control-row.stacked{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
-  #domain-polarization .control-row.stacked .source-control{ grid-column:1 / -1; order:1; }
-  #domain-polarization .control-row.stacked .polarizer-control{ container-type:inline-size; }
+  .control-row.stacked{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .control-row.stacked .source-control,
+  .control-row.stacked .sp-source-card{ grid-column:1 / -1; order:1; }
+  .control-row.stacked .polarizer-control{ container-type:inline-size; }
+  @media (max-width:360px){
+    .control-row.stacked{ gap:10px; }
+    .control-row.stacked .polarizer-control{ padding:12px 9px 14px; }
+    .control-row.stacked .quick-row{ gap:4px; }
+  }
   @container (max-width:260px){
     #domain-polarization .polarizer-control h3{ font-size:17px; }
     #domain-polarization .polarizer-control .quick-btn{ padding:9px 2px; font-size:11px; }
@@ -462,6 +468,9 @@
 
   @media (max-width:640px){
     h1{ font-size:26px; }
+  }
+  @media (max-width:360px){
+    .mode-switch:not(.small) button{ padding:9px 12px; font-size:12.5px; }
   }
 
   /* ============================= BRA-KET ============================= */
@@ -642,6 +651,10 @@
   #domain-spdc .sp-grid .quick-btn{ padding:6px 2px; font-size:12px; }
   #domain-spdc .sp-grid .quick-btn.wide{ grid-column:1/-1; }
   #domain-spdc .sp-grid.fracs .quick-btn{ padding:2px; overflow:hidden; }
+  @container (max-width:260px){
+    #domain-spdc .sp-meas-card h3{ font-size:17px; }
+    #domain-spdc .sp-grid.fracs{ grid-template-columns:1fr; }
+  }
   #domain-spdc .quick-btn .katex{ pointer-events:none; }
   #domain-spdc .sp-card-sub{ font-size:12px; color:var(--ink-soft); margin:-4px 0 9px; min-height:1.3em; }
   #domain-spdc .sp-params{ display:block; margin-top:14px; }
@@ -2358,6 +2371,9 @@
     bkInner.classList.toggle('scaled', s < 1);
     bkInner.style.transform = s < 1 ? 'scale(' + s + ')' : '';
     bkInner.style.marginBottom = s < 1 ? (-(1 - s) * bkInner.offsetHeight) + 'px' : '';
+    // the transform doesn't shrink the layout box, so hide the now-empty overflow
+    bkWrap.style.overflowX = '';
+    if (s < 1){ bkWrap.style.overflowX = 'clip'; if (bkWrap.style.overflowX !== 'clip') bkWrap.style.overflowX = 'hidden'; }
   }
   if (window.ResizeObserver){
     var bkRO = new ResizeObserver(function(){ fitBraketDiagram(); });
@@ -3657,23 +3673,26 @@
 })();
 </script>
 <script>
-/* Polarization controls: if Alice, Source and Bob don't all fit on one
-   line, lay out Alice + Bob together with the Source underneath. */
+/* Polarization and SPDC controls: if Alice, Source and Bob don't all fit
+   on one line, lay out Alice + Bob together with the Source underneath. */
 (function(){
-  var row = document.querySelector('#domain-polarization .control-row');
-  if (!row) return;
-  var cards = row.children;
-  function fitPolarizationControls(){
-    if (!row.offsetWidth) return;                    // panel hidden
+  var rows = document.querySelectorAll('#domain-polarization .control-row, #sp-controls');
+  function fit(row){
+    var cards = row.children;
+    if (!row.offsetWidth || cards.length < 3) return;   // panel hidden / not built yet
     row.classList.remove('stacked');
     var top = cards[0].offsetTop, fits = true;
     for (var i = 1; i < cards.length; i++) if (cards[i].offsetTop !== top) fits = false;
     if (!fits) row.classList.add('stacked');
   }
-  if (window.ResizeObserver) new ResizeObserver(fitPolarizationControls).observe(row.parentNode);
-  window.addEventListener('resize', fitPolarizationControls);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitPolarizationControls);
-  fitPolarizationControls();
+  function fitAll(){ for (var i = 0; i < rows.length; i++) fit(rows[i]); }
+  if (window.ResizeObserver){
+    var ro = new ResizeObserver(fitAll);
+    for (var i = 0; i < rows.length; i++) ro.observe(rows[i].parentNode);
+  }
+  window.addEventListener('resize', fitAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  fitAll();
 })();
 </script>
 </body>
